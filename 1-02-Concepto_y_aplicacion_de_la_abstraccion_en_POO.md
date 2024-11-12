@@ -44,6 +44,28 @@ class Pajaro(Animal):
         return "Volando"
 ```
 
+#### Diagrama de Clases
+
+```mermaid
+classDiagram
+    class Animal {
+        <<abstract>>
+        +nombre: str
+        +hacer_sonido(): str
+        +moverse(): str
+    }
+    class Perro {
+        +hacer_sonido(): str
+        +moverse(): str
+    }
+    class Pajaro {
+        +hacer_sonido(): str
+        +moverse(): str
+    }
+    Animal <|-- Perro
+    Animal <|-- Pajaro
+```
+
 ### 2.2 Ejemplo Práctico: Sistema de Pagos
 
 ```python
