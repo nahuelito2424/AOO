@@ -77,7 +77,7 @@ erDiagram
         string ISBN
         string TITULO
         string AUTOR
-        bool DISPONIBLE
+        boolean DISPONIBLE
     }
     USUARIO {
         int ID
@@ -88,8 +88,9 @@ erDiagram
         datetime FECHA_PRESTAMO
         datetime FECHA_DEVOLUCION
     }
-    LIBRO ||--o PRESTAMO : PRESTADO_A
-    USUARIO ||--o PRESTAMO : REALIZA
+    LIBRO ||--o| PRESTAMO : "PRESTADO_A"
+    USUARIO ||--o| PRESTAMO : "REALIZA"
+
 ```
 
 
