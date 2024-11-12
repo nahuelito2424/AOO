@@ -107,10 +107,7 @@ libro1 = Libro("ISBN1", "Libro1")
 libro1.prestar()
 ```
 
-#### **b. Código Fuente Completo y Comentado**
-[Enlace a repositorio con ejemplos completos de AE y AOO para el sistema de biblioteca]
-
-#### **c. Ejemplos de Uso y Pruebas Unitarias**
+#### **b. Ejemplos de Uso y Pruebas Unitarias**
 ```python
 # Prueba unitaria para la clase Libro (AOO)
 import unittest
