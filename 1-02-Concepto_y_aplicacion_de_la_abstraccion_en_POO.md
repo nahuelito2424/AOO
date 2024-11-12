@@ -15,7 +15,7 @@ En capítulos previos, se introdujo el concepto de abstracción en el contexto d
 **Técnicas de Implementación de Abstracción en POO**
 
 1. **Clases Abstractas**: Definen una interfaz o un conjunto de métodos que deben ser implementados por clases derivadas.
-2. ```python
+```python
 from abc import ABC, abstractmethod
 
 class FiguraGeometrica(ABC):
