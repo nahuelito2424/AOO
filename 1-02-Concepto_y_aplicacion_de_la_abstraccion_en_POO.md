@@ -15,7 +15,7 @@ En capítulos previos, se introdujo el concepto de abstracción en el contexto d
 **Técnicas de Implementación de Abstracción en POO**
 
 1. **Clases Abstractas**: Definen una interfaz o un conjunto de métodos que deben ser implementados por clases derivadas.
-   ```python
+2. ```python
 from abc import ABC, abstractmethod
 
 class FiguraGeometrica(ABC):
@@ -32,7 +32,7 @@ class Circulo(FiguraGeometrica):
 ```
 
 2. **Interfaz**: Especifican un contrato que debe ser cumplido por cualquier clase que la implemente, sin estado ni implementación.
-   ```java
+```java
 public interface Impresora {
     void imprimir(Documento doc);
 }
@@ -46,7 +46,7 @@ public class ImpresoraLaser implements Impresora {
 ```
 
 3. **Métodos Abstractos**: Son declarados en clases abstractas y deben ser implementados por las clases que heredan de ellas.
-   ```csharp
+```csharp
 public abstract class Animal {
     public abstract void Sonido();
 }
