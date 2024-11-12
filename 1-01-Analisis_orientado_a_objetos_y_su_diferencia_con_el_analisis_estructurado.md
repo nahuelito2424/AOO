@@ -220,6 +220,7 @@ classDiagram
         +agregar_libro()
         +registrar_usuario()
         +buscar_libro()
+        +persistir_datos()
     }
     
     class Libro {
