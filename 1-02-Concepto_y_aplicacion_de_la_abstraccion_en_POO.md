@@ -1,84 +1,186 @@
-**Capítulo: Fundamentos del Análisis Orientado a Objetos**
-**Tema: Concepto y Aplicación de la Abstracción en POO (Profundización)**
+# Abstracción en Programación Orientada a Objetos con Python
 
-**Introducción**
+## 1. Conceptos Fundamentales
 
-En capítulos previos, se introdujo el concepto de abstracción en el contexto de la Programación Orientada a Objetos (POO) como una de sus cuatro pilares fundamentales, junto con encapsulamiento, herencia y polimorfismo. La abstracción es crucial para modelar sistemas complejos de manera eficaz, enfocándose en aspectos esenciales mientras se ignoran detalles no relevantes. A continuación, profundizaremos en la aplicación práctica de la abstracción en POO, explorando sus beneficios, técnicas de implementación y ejemplos ilustrativos.
+La abstracción es un pilar fundamental de la POO que nos permite:
+- Simplificar sistemas complejos
+- Reutilizar código eficientemente
+- Crear diseños flexibles y escalables
+- Mejorar la seguridad del código
 
-**Beneficios de la Abstracción en POO**
+## 2. Implementación en Python
 
-1. **Simplificación de Complejidad**: Al centrarse en características esenciales, se facilita el entendimiento y manejo de sistemas complejos.
-2. **Reutilización de Código**: La abstracción permite crear clases genéricas que pueden ser adaptadas para diferentes contextos.
-3. **Flexibilidad y Escalabilidad**: Sistemas abstractos son más fáciles de extender o modificar sin afectar componentes dependientes.
-4. **Mejora en la Seguridad**: Ocultando detalles de implementación, se reduce el riesgo de manipulaciones no autorizadas.
+### 2.1 Clases Abstractas
 
-**Técnicas de Implementación de Abstracción en POO**
-
-1. **Clases Abstractas**: Definen una interfaz o un conjunto de métodos que deben ser implementados por clases derivadas.
 ```python
 from abc import ABC, abstractmethod
 
-class FiguraGeometrica(ABC):
+class Animal(ABC):
+    def __init__(self, nombre: str):
+        self.nombre = nombre
+    
     @abstractmethod
-    def area(self):
+    def hacer_sonido(self) -> str:
+        """Método que debe ser implementado por todas las subclases."""
+        pass
+    
+    @abstractmethod
+    def moverse(self) -> str:
+        """Define cómo se mueve el animal."""
         pass
 
-class Circulo(FiguraGeometrica):
-    def __init__(self, radio):
-        self.radio = radio
+class Perro(Animal):
+    def hacer_sonido(self) -> str:
+        return "¡Guau!"
     
-    def area(self):
-        return 3.14 * (self.radio ** 2)
+    def moverse(self) -> str:
+        return "Caminando en cuatro patas"
+
+class Pajaro(Animal):
+    def hacer_sonido(self) -> str:
+        return "¡Pío!"
+    
+    def moverse(self) -> str:
+        return "Volando"
 ```
 
-2. **Interfaz**: Especifican un contrato que debe ser cumplido por cualquier clase que la implemente, sin estado ni implementación.
-```java
-public interface Impresora {
-    void imprimir(Documento doc);
-}
+### 2.2 Ejemplo Práctico: Sistema de Pagos
 
-public class ImpresoraLaser implements Impresora {
-    @Override
-    public void imprimir(Documento doc) {
-        System.out.println("Imprimiendo con láser...");
-    }
-}
+```python
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import List, Dict
+
+class MetodoPago(ABC):
+    @abstractmethod
+    def procesar_pago(self, monto: float) -> bool:
+        pass
+    
+    @abstractmethod
+    def verificar_fondos(self, monto: float) -> bool:
+        pass
+
+class TarjetaCredito(MetodoPago):
+    def __init__(self, numero: str, fecha_exp: str):
+        self.numero = numero
+        self.fecha_exp = fecha_exp
+    
+    def procesar_pago(self, monto: float) -> bool:
+        if self.verificar_fondos(monto):
+            print(f"Procesando pago de ${monto} con tarjeta {self.numero}")
+            return True
+        return False
+    
+    def verificar_fondos(self, monto: float) -> bool:
+        # Simulación de verificación de fondos
+        return True
+
+class PayPal(MetodoPago):
+    def __init__(self, email: str):
+        self.email = email
+    
+    def procesar_pago(self, monto: float) -> bool:
+        if self.verificar_fondos(monto):
+            print(f"Procesando pago de ${monto} con PayPal ({self.email})")
+            return True
+        return False
+    
+    def verificar_fondos(self, monto: float) -> bool:
+        # Simulación de verificación de fondos
+        return True
+
+class Transaccion:
+    def __init__(self, metodo_pago: MetodoPago):
+        self.metodo_pago = metodo_pago
+        self.fecha = datetime.now()
+    
+    def ejecutar_pago(self, monto: float) -> bool:
+        return self.metodo_pago.procesar_pago(monto)
 ```
 
-3. **Métodos Abstractos**: Son declarados en clases abstractas y deben ser implementados por las clases que heredan de ellas.
-```csharp
-public abstract class Animal {
-    public abstract void Sonido();
-}
+### 2.3 Pruebas Unitarias
 
-public class Perro : Animal {
-    public override void Sonido() {
-        Console.WriteLine("Guau!");
-    }
-}
+```python
+import unittest
+
+class TestMetodosPago(unittest.TestCase):
+    def setUp(self):
+        self.tarjeta = TarjetaCredito("1234-5678-9012-3456", "12/25")
+        self.paypal = PayPal("usuario@email.com")
+    
+    def test_pago_tarjeta(self):
+        transaccion = Transaccion(self.tarjeta)
+        self.assertTrue(transaccion.ejecutar_pago(100.0))
+    
+    def test_pago_paypal(self):
+        transaccion = Transaccion(self.paypal)
+        self.assertTrue(transaccion.ejecutar_pago(50.0))
+
+if __name__ == '__main__':
+    unittest.main()
 ```
 
-**Ejemplos Prácticos de Aplicación**
+## 3. Ejercicio Práctico: Sistema de Biblioteca
 
-- **Sistema Bancario**: 
-  - **Clase Abstracta `CuentaBancaria`** con métodos abstractos para depósito y retiro.
-  - **Clases Derivadas `CuentaAhorro`**, `CuentaCorriente` implementando los métodos según sus reglas específicas.
+```python
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from datetime import datetime, timedelta
 
-- **Simulador de Vehículos**:
-  - **Interfaz `IVehiculo`** definida con métodos para acelerar y frenar.
-  - **Clases `Coche`**, `Avión` implementando la interfaz con lógica particular para cada tipo de vehículo.
+class MaterialBiblioteca(ABC):
+    def __init__(self, codigo: str, titulo: str):
+        self.codigo = codigo
+        self.titulo = titulo
+        self.prestado = False
+        self.fecha_devolucion: Optional[datetime] = None
+    
+    @abstractmethod
+    def calcular_fecha_devolucion(self) -> datetime:
+        pass
+    
+    def prestar(self) -> bool:
+        if not self.prestado:
+            self.prestado = True
+            self.fecha_devolucion = self.calcular_fecha_devolucion()
+            return True
+        return False
 
-**Conclusión**
+class Libro(MaterialBiblioteca):
+    def calcular_fecha_devolucion(self) -> datetime:
+        return datetime.now() + timedelta(days=14)
 
-La abstracción es un pilar fundamental en POO que permite a los desarrolladores crear soluciones más manejables, flexibles y escalables. Al aplicar técnicas como clases abstractas, interfaces y métodos abstractos, se puede modelar la complejidad del mundo real de manera efectiva. La comprensión profunda de la abstracción es esencial para diseñar sistemas orientados a objetos que satisfagan las necesidades actuales y futuras de los usuarios.
+class Revista(MaterialBiblioteca):
+    def calcular_fecha_devolucion(self) -> datetime:
+        return datetime.now() + timedelta(days=7)
 
-**Preguntas de Repaso**
+class DVD(MaterialBiblioteca):
+    def calcular_fecha_devolucion(self) -> datetime:
+        return datetime.now() + timedelta(days=3)
+```
 
-1. ¿Cuál es el propósito principal de la abstracción en POO?
-2. Describa una situación donde la aplicación de clases abstractas sea más adecuada que interfaces.
-3. Diseñe un ejemplo simple de un sistema que utilice métodos abstractos para demostrar polimorfismo.
+## 4. Mejores Prácticas
 
-**Actividades Prácticas**
+1. **Diseño**:
+   - Usar clases abstractas para definir interfaces comunes
+   - Mantener la abstracción en el nivel adecuado
+   - Separar responsabilidades claramente
 
-1. **Sistema de Gestión de Biblioteca**: Implemente un sistema utilizando abstracción para modelar diferentes tipos de materiales (libros, revistas, DVD) con operaciones comunes (prestar, devolver).
-2. **Simulador de Ecosistemas**: Cree un simulador que utilice la abstracción para representar Various especies (depredadores, presas, plantas) con comportamientos genéricos y específicos.
+2. **Implementación**:
+   - Utilizar type hints para mejor documentación
+   - Implementar métodos abstractos en todas las subclases
+   - Mantener la cohesión alta y el acoplamiento bajo
+
+3. **Testing**:
+   - Probar cada implementación concreta
+   - Verificar el comportamiento polimórfico
+   - Cubrir casos especiales y errores
+
+## 5. Ejercicios Propuestos
+
+1. Implementar un sistema de notificaciones con diferentes medios (email, SMS, push)
+2. Crear un simulador de vehículos con distintos tipos de transporte
+3. Diseñar un sistema de procesamiento de archivos para diferentes formatos
+
+## Conclusión
+
+La abstracción en Python permite crear sistemas flexibles y mantenibles. La clave está en identificar las características comunes y modelarlas de manera que permitan extensibilidad y reutilización del código.

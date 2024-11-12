@@ -1,71 +1,237 @@
-**Capítulo: Fundamentos del Análisis Orientado a Objetos**
-**Tema: Modularidad - Diseño y Beneficios**
+# Modularidad en Python: Diseño y Aplicación Práctica
 
-**Introducción**
+## 1. Fundamentos de la Modularidad
 
-Habiendo explorado los conceptos de abstracción y encapsulamiento, nos adentramos ahora en la modularidad, un pilar fundamental del Análisis Orientado a Objetos (AOO) que permite descomponer sistemas complejos en unidades más manejables, fomentando la organización, reutilización y mantenimiento del código. En este tema, profundizaremos en el diseño y los beneficios de la modularidad en el contexto de la programación orientada a objetos.
+La modularidad en Python se implementa mediante:
+- Módulos (archivos .py)
+- Paquetes (directorios con __init__.py)
+- Clases y funciones bien organizadas
+- Interfaces claras entre componentes
 
-**Diseño Modular**
+## 2. Implementación Práctica: Sistema de E-commerce
 
-1. **Definición de Módulos**:
-   - Unidades independientes que contienen un conjunto coherente de clases, funciones o variables relacionadas.
-   - Cada módulo debe tener una única responsabilidad o propósito bien definido.
+### 2.1 Estructura del Proyecto
+```
+ecommerce/
+│
+├── __init__.py
+├── producto/
+│   ├── __init__.py
+│   ├── modelo.py
+│   └── repositorio.py
+│
+├── pedido/
+│   ├── __init__.py
+│   ├── modelo.py
+│   └── servicio.py
+│
+└── pago/
+    ├── __init__.py
+    ├── procesador.py
+    └── proveedor/
+        ├── __init__.py
+        ├── paypal.py
+        └── stripe.py
+```
 
-2. **Criterios para la Creación de Módulos**:
-   - **Cohesión**: Maximizar la relación entre los elementos dentro del módulo.
-   - **Acoplamiento**: Minimizar las dependencias entre diferentes módulos.
-   - **Reutilización**: Diseñar módulos que puedan ser fácilmente integrados en otros proyectos.
+### 2.2 Implementación de Módulos
 
-3. **Estructura de un Módulo**:
-   - **Interfaz**: Definición de cómo interactuar con el módulo (métodos públicos, parámetros, etc.).
-   - **Implementación**: Detalles internos del módulo, ocultos al usuario (clases privadas, variables de estado, etc.).
+```python
+# producto/modelo.py
+from dataclasses import dataclass
+from decimal import Decimal
+from typing import Optional
 
-**Beneficios de la Modularidad**
+@dataclass
+class Producto:
+    id: int
+    nombre: str
+    precio: Decimal
+    stock: int
+    descripcion: Optional[str] = None
 
-1. **Mejora la Legibilidad y Mantenimiento**:
-   - Sistemas más organizados facilitan la comprensión y actualización del código.
+# producto/repositorio.py
+from typing import List, Optional
+from .modelo import Producto
 
-2. **Incrementa la Reutilización**:
-   - Módulos bien diseñados pueden ser integrados en múltiples proyectos, reduciendo el esfuerzo de desarrollo.
+class ProductoRepositorio:
+    def __init__(self):
+        self._productos: List[Producto] = []
 
-3. **Reduce el Acoplamiento**:
-   - Cambios en un módulo tienen un impacto mínimo en otros, aumentando la estabilidad del sistema.
+    def agregar(self, producto: Producto) -> None:
+        self._productos.append(producto)
 
-4. **Facilita el Trabajo en Equipo**:
-   - Desarrolladores pueden trabajar simultáneamente en diferentes módulos sin conflictos.
+    def buscar_por_id(self, id: int) -> Optional[Producto]:
+        return next((p for p in self._productos if p.id == id), None)
 
-5. **Mejora la Escalabilidad**:
-   - Sistemas modulares son más fáciles de extender o modificar según las necesidades cambiantes.
+    def actualizar_stock(self, id: int, cantidad: int) -> bool:
+        producto = self.buscar_por_id(id)
+        if producto and producto.stock >= cantidad:
+            producto.stock -= cantidad
+            return True
+        return False
 
-**Patrones y Prácticas para una Modularidad Efectiva**
+# pedido/modelo.py
+from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal
+from typing import List
+from ..producto.modelo import Producto
 
-1. **Single Responsibility Principle (SRP)**: Cada módulo debe tener una sola razón para cambiar.
-2. **Dependency Injection**: Proporcionar dependencias a los módulos en lugar de hardcodearlas.
-3. **Interfaces y Abstractos**: Utilizar para definir contratos que faciliten la interoperabilidad entre módulos.
+@dataclass
+class LineaPedido:
+    producto: Producto
+    cantidad: int
+    precio_unitario: Decimal
 
-**Ejemplos Prácticos**
+    @property
+    def subtotal(self) -> Decimal:
+        return self.precio_unitario * self.cantidad
 
-- **Sistema de Comercio Electrónico**:
-  - Módulo de **Gestión de Pedidos**, con interfaz para crear, cancelar y trackear pedidos.
-  - Módulo de **Procesamiento de Pagos**, integrado pero independiente para facilitar cambios en proveedores de pago.
+@dataclass
+class Pedido:
+    id: int
+    fecha: datetime
+    lineas: List[LineaPedido]
+    estado: str = "pendiente"
 
-- **Plataforma de Aprendizaje Online**:
-  - Módulo de **Gestión de Cursos**, con funcionalidades para crear, inscribir y evaluar cursos.
-  - Módulo de **Herramientas de Colaboración**, integrado para facilitar interacciones entre estudiantes y profesores.
+    @property
+    def total(self) -> Decimal:
+        return sum(linea.subtotal for linea in self.lineas)
 
-**Consejos para Implementar la Modularidad**
+# pago/procesador.py
+from abc import ABC, abstractmethod
+from decimal import Decimal
+from typing import Dict
 
-1. **Comenzar con una Arquitectura Bien Definida**: Antes de escribir código, planificar la estructura modular.
-2. **Revisar y Refinar Regularmente**: Asegurarse de que la modularidad no se deteriore con el tiempo.
-3. **Documentar las Interfaces de los Módulos**: Facilitar la comprensión y uso correcto de cada módulo.
+class ProcesadorPago(ABC):
+    @abstractmethod
+    def procesar(self, monto: Decimal, datos: Dict) -> bool:
+        pass
 
-**Preguntas de Repaso**
+# pago/proveedor/paypal.py
+from ..procesador import ProcesadorPago
+from decimal import Decimal
+from typing import Dict
 
-1. ¿Cuál es el principal beneficio de diseñar sistemas modulares en AOO?
-2. Describa cómo aplicaría el principio de única responsabilidad al diseño de un módulo en un sistema de gestión de bibliotecas.
-3. Explique cómo la inyección de dependencias mejora la modularidad en una aplicación.
+class PayPalProcesador(ProcesadorPago):
+    def procesar(self, monto: Decimal, datos: Dict) -> bool:
+        # Implementación de procesamiento PayPal
+        print(f"Procesando ${monto} con PayPal")
+        return True
 
-**Actividades Prácticas**
+# Uso del sistema
+class ServicioPedidos:
+    def __init__(
+        self,
+        repo_productos: ProductoRepositorio,
+        procesador_pago: ProcesadorPago
+    ):
+        self.repo_productos = repo_productos
+        self.procesador_pago = procesador_pago
+        self._pedidos: List[Pedido] = []
 
-1. **Sistema de Gestión de Eventos**: Diseñe e implemente un sistema utilizando principios de modularidad para gestionar eventos, incluyendo módulos para registro de asistentes, gestión de espacios y servicios de catering.
-2. **Aplicación de Monitoreo Ambiental**: Cree una aplicación modulaire que integre módulos para el monitoreo de calidad del aire, niveles de ruido y temperatura, permitiendo fácilmente agregar nuevos tipos de sensores en el futuro.
+    def crear_pedido(
+        self, 
+        items: List[tuple[int, int]], 
+        datos_pago: Dict
+    ) -> Optional[Pedido]:
+        lineas_pedido = []
+        
+        # Verificar stock y crear líneas de pedido
+        for producto_id, cantidad in items:
+            producto = self.repo_productos.buscar_por_id(producto_id)
+            if not producto or not self.repo_productos.actualizar_stock(
+                producto_id, 
+                cantidad
+            ):
+                return None
+                
+            lineas_pedido.append(
+                LineaPedido(producto, cantidad, producto.precio)
+            )
+
+        # Crear pedido
+        pedido = Pedido(
+            id=len(self._pedidos) + 1,
+            fecha=datetime.now(),
+            lineas=lineas_pedido
+        )
+
+        # Procesar pago
+        if self.procesador_pago.procesar(pedido.total, datos_pago):
+            self._pedidos.append(pedido)
+            return pedido
+        return None
+```
+
+## 3. Pruebas Unitarias
+
+```python
+import unittest
+from decimal import Decimal
+from ecommerce.producto.modelo import Producto
+from ecommerce.producto.repositorio import ProductoRepositorio
+from ecommerce.pago.proveedor.paypal import PayPalProcesador
+from ecommerce.pedido.servicio import ServicioPedidos
+
+class TestSistemaEcommerce(unittest.TestCase):
+    def setUp(self):
+        self.repo = ProductoRepositorio()
+        self.procesador = PayPalProcesador()
+        self.servicio = ServicioPedidos(self.repo, self.procesador)
+        
+        # Agregar productos de prueba
+        self.repo.agregar(Producto(1, "Laptop", Decimal("999.99"), 10))
+        self.repo.agregar(Producto(2, "Mouse", Decimal("29.99"), 20))
+
+    def test_crear_pedido_exitoso(self):
+        items = [(1, 1), (2, 2)]  # 1 laptop, 2 mouse
+        datos_pago = {"email": "cliente@email.com"}
+        
+        pedido = self.servicio.crear_pedido(items, datos_pago)
+        
+        self.assertIsNotNone(pedido)
+        self.assertEqual(len(pedido.lineas), 2)
+        self.assertEqual(pedido.total, Decimal("1059.97"))
+
+    def test_crear_pedido_sin_stock(self):
+        items = [(1, 11)]  # Intentar comprar más laptops que el stock
+        datos_pago = {"email": "cliente@email.com"}
+        
+        pedido = self.servicio.crear_pedido(items, datos_pago)
+        
+        self.assertIsNone(pedido)
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+## 4. Mejores Prácticas
+
+1. **Organización**:
+   - Un módulo por archivo
+   - Nombres descriptivos y consistentes
+   - Separación clara de responsabilidades
+
+2. **Diseño**:
+   - Usar inyección de dependencias
+   - Definir interfaces claras
+   - Minimizar acoplamiento entre módulos
+
+3. **Importaciones**:
+   - Evitar importaciones circulares
+   - Usar importaciones absolutas
+   - Mantener __init__.py limpios
+
+## 5. Ejercicio Práctico
+
+Implementar un sistema de gestión de inventario con los siguientes módulos:
+1. Gestión de productos
+2. Control de stock
+3. Generación de reportes
+4. Alertas de bajo stock
+
+## Conclusión
+
+La modularidad en Python permite crear sistemas escalables y mantenibles. La clave está en una buena organización del código y la definición clara de responsabilidades e interfaces entre módulos.

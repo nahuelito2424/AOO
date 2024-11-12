@@ -1,133 +1,228 @@
-**Capitulo: Análisis Orientado a Objetos vs. Análisis Estructurado**
+# Capitulo: Análisis Orientado a Objetos vs. Análisis Estructurado en Python
 
-### **1. Introducción a la Unidad y Objetivos de Aprendizaje**
+## 1. Introducción
 
-#### **Introducción**
-En unidades previas, se presentó una visión general del Análisis Orientado a Objetos (AOO) y su contraste con el Análisis Estructurado (AE). Esta unidad profundiza en los aspectos fundamentales que diferencian a estas dos metodologías de análisis, permitiendo a los desarrolladores tomar decisiones informadas sobre cuál enfoque utilizar según el proyecto. 
+Esta unidad explora las diferencias entre el Análisis Orientado a Objetos (AOO) y el Análisis Estructurado (AE), centrándonos en implementaciones prácticas con Python.
 
-#### **Objetivos de Aprendizaje**
-- Comprender las bases teóricas del Análisis Estructurado y su evolución hacia el Análisis Orientado a Objetos.
-- Identificar y analizar las diferencias clave entre AE y AOO en términos de modelado, abstracción y resolución de problemas.
-- Evaluar la idoneidad de cada enfoque para diferentes tipos de proyectos de software.
-- Aplicar conocimientos adquiridos para diseñar un ejemplo simple utilizando ambos métodos.
+### Objetivos de Aprendizaje
+- Comprender las diferencias clave entre AOO y AE
+- Implementar soluciones usando ambos enfoques en Python
+- Evaluar qué enfoque usar según el proyecto
+- Aplicar buenas prácticas de programación en ambos paradigmas
 
-### **2. Documento Funcional de Requerimientos**
+## 2. Sistema de Biblioteca: Caso Práctico
 
-#### **a. Descripción Detallada de la Funcionalidad**
-El objetivo es comparar cómo AE y AOO abordarían el análisis de un sistema de gestión de biblioteca, enfocándonos en la funcionalidad de préstamo de libros.
+### Requerimientos Principales
+- Gestión de usuarios (estudiantes y bibliotecarios)
+- Control de préstamos y devoluciones
+- Búsqueda y consulta de libros
+- Notificaciones de vencimiento
 
-**Requerimientos del Sistema:**
+### Modelado del Sistema
 
-- **Usuarios:** Administradores y lectores.
-- **Funcionalidades:**
-  - Registro de usuarios y libros.
-  - Préstamo y devolución de libros.
-  - Consulta de disponibilidad de libros.
+#### Enfoque Estructurado (AE)
+```python
+# Estructura de datos
+libros = {}
+usuarios = {}
+prestamos = {}
 
-#### **b. Diagramas con Sintaxis de Mermaid**
+def agregar_libro(isbn, titulo, autor):
+    """Agrega un nuevo libro al sistema."""
+    if isbn not in libros:
+        libros[isbn] = {
+            'titulo': titulo,
+            'autor': autor,
+            'disponible': True
+        }
+        return True
+    return False
 
-**Diagrama de Flujo (AE) para el Préstamo de Libros**
-```mermaid
-graph LR
-    A[Usuario Solicita Préstamo] --> B{Libro Disponible?}
-    B --> |Sí| C[Registro de Préstamo]
-    B --> |No| D[Muestra Mensaje de No Disponibilidad]
-    C --> E[Actualiza Estado del Libro]
-    E --> F[Finalizado]
+def prestar_libro(isbn, id_usuario):
+    """Registra el préstamo de un libro."""
+    if isbn in libros and libros[isbn]['disponible']:
+        if id_usuario in usuarios:
+            libros[isbn]['disponible'] = False
+            prestamos[len(prestamos) + 1] = {
+                'isbn': isbn,
+                'id_usuario': id_usuario,
+                'fecha_prestamo': datetime.now(),
+                'fecha_devolucion': datetime.now() + timedelta(days=14)
+            }
+            return True
+    return False
 ```
 
-**Diagrama de Clases (AOO) para el Sistema de Biblioteca**
+#### Enfoque Orientado a Objetos (AOO)
+```python
+from datetime import datetime, timedelta
+from typing import List, Optional
+
+class Libro:
+    def __init__(self, isbn: str, titulo: str, autor: str):
+        self.isbn = isbn
+        self.titulo = titulo
+        self.autor = autor
+        self.disponible = True
+        self.prestamo_actual = None
+
+    def prestar(self, usuario: 'Usuario') -> bool:
+        if self.disponible:
+            self.disponible = False
+            self.prestamo_actual = Prestamo(self, usuario)
+            return True
+        return False
+
+    def devolver(self) -> bool:
+        if not self.disponible:
+            self.disponible = True
+            self.prestamo_actual = None
+            return True
+        return False
+
+class Usuario:
+    def __init__(self, id: int, nombre: str):
+        self.id = id
+        self.nombre = nombre
+        self.prestamos: List[Prestamo] = []
+
+    def tomar_prestado(self, libro: Libro) -> bool:
+        if libro.prestar(self):
+            self.prestamos.append(libro.prestamo_actual)
+            return True
+        return False
+
+class Prestamo:
+    def __init__(self, libro: Libro, usuario: Usuario):
+        self.libro = libro
+        self.usuario = usuario
+        self.fecha_prestamo = datetime.now()
+        self.fecha_devolucion = self.fecha_prestamo + timedelta(days=14)
+        self.devuelto = False
+
+class Biblioteca:
+    def __init__(self):
+        self.libros: List[Libro] = []
+        self.usuarios: List[Usuario] = []
+        self.prestamos: List[Prestamo] = []
+
+    def agregar_libro(self, isbn: str, titulo: str, autor: str) -> Libro:
+        libro = Libro(isbn, titulo, autor)
+        self.libros.append(libro)
+        return libro
+
+    def registrar_usuario(self, id: int, nombre: str) -> Usuario:
+        usuario = Usuario(id, nombre)
+        self.usuarios.append(usuario)
+        return usuario
+
+    def buscar_libro(self, isbn: str) -> Optional[Libro]:
+        return next((libro for libro in self.libros if libro.isbn == isbn), None)
+```
+
+### Diagramas del Sistema
+
 ```mermaid
 classDiagram
-    class Usuario {
-        -id: int
-        -nombre: string
-        +registro()
+    class Biblioteca {
+        +List[Libro] libros
+        +List[Usuario] usuarios
+        +agregar_libro()
+        +registrar_usuario()
+        +buscar_libro()
     }
     
     class Libro {
-        -isbn: string
-        -titulo: string
-        -disponible: bool
+        -str isbn
+        -str titulo
+        -str autor
+        -bool disponible
         +prestar()
         +devolver()
     }
     
-    class Prestamo {
-        -fechaPrestamo: date
-        -fechaDevolucion: date
-        +registrarPrestamo()
+    class Usuario {
+        -int id
+        -str nombre
+        -List[Prestamo] prestamos
+        +tomar_prestado()
     }
     
-    Usuario "1..*" --* Prestamo
-    Libro "1..*" --* Prestamo
-```
-
-#### **c. Requisitos No Funcionales**
-- **Escalabilidad:** El sistema debe poder manejar un aumento del 20% en el número de usuarios y libros dentro de los próximos dos años.
-- **Seguridad:** Todos los datos de usuarios y préstamos deben ser cifrados.
-
-### **3. Implementación en Python**
-
-#### **a. Explicación Paso a Paso del Código**
-Se proporcionará un ejemplo simplificado de implementación para ambos enfoques, centrado en la funcionalidad de préstamo de libros.
-
-**Análisis Estructurado (Enfoque Procedural):**
-```python
-# Ejemplo AE - Préstamo de Libros
-libros = {"ISBN1": {"titulo": "Libro1", "disponible": True}}
-
-def prestar_libro(isbn):
-    if isbn in libros and libros[isbn]["disponible"]:
-        libros[isbn]["disponible"] = False
-        print("Préstamo exitoso")
-    else:
-        print("No disponible")
-
-prestar_libro("ISBN1")
-```
-
-**Análisis Orientado a Objetos:**
-```python
-# Ejemplo AOO - Clase Libro
-class Libro:
-    def __init__(self, isbn, titulo):
-        self.isbn = isbn
-        self.titulo = titulo
-        self.disponible = True
+    class Prestamo {
+        -Libro libro
+        -Usuario usuario
+        -datetime fecha_prestamo
+        -datetime fecha_devolucion
+        -bool devuelto
+    }
     
-    def prestar(self):
-        if self.disponible:
-            self.disponible = False
-            print("Préstamo exitoso")
-        else:
-            print("No disponible")
-
-libro1 = Libro("ISBN1", "Libro1")
-libro1.prestar()
+    Biblioteca "1" --> "*" Libro
+    Biblioteca "1" --> "*" Usuario
+    Usuario "1" --> "*" Prestamo
+    Libro "1" --> "0..1" Prestamo
 ```
 
-#### **b. Ejemplos de Uso y Pruebas Unitarias**
+## 3. Comparación de Enfoques
+
+### Ventajas del AE
+- Más simple para proyectos pequeños
+- Menor overhead inicial
+- Fácil de entender para principiantes
+
+### Ventajas del AOO
+- Mejor mantenibilidad
+- Reutilización de código
+- Modelado más natural de entidades del mundo real
+
+## 4. Pruebas Unitarias
+
 ```python
-# Prueba unitaria para la clase Libro (AOO)
 import unittest
 
-class TestLibro(unittest.TestCase):
-    def test_prestamo_exitoso(self):
-        libro = Libro("ISBN1", "Libro1")
-        libro.prestar()
-        self.assertFalse(libro.disponible)
+class TestBiblioteca(unittest.TestCase):
+    def setUp(self):
+        self.biblioteca = Biblioteca()
+        self.libro = self.biblioteca.agregar_libro("123", "Python Basics", "John Doe")
+        self.usuario = self.biblioteca.registrar_usuario(1, "Ana Smith")
+
+    def test_prestamo_libro(self):
+        # Prueba préstamo exitoso
+        self.assertTrue(self.usuario.tomar_prestado(self.libro))
+        self.assertFalse(self.libro.disponible)
+        
+        # Prueba préstamo de libro no disponible
+        usuario2 = self.biblioteca.registrar_usuario(2, "Bob Johnson")
+        self.assertFalse(usuario2.tomar_prestado(self.libro))
+
+    def test_devolucion_libro(self):
+        self.usuario.tomar_prestado(self.libro)
+        self.assertTrue(self.libro.devolver())
+        self.assertTrue(self.libro.disponible)
 
 if __name__ == '__main__':
     unittest.main()
 ```
 
-### **4. Mejores Prácticas y Consideraciones de Diseño**
+## 5. Mejores Prácticas
 
-- ** Modularidad:** Utilice módulos en AE y clases en AOO para mantener la organización.
-- **Reutilización de Código:** Aproveche las ventajas de la herencia en AOO para reducir duplicidad.
-- **Seguridad:** Aplicar principios de seguridad desde el diseño, como validación de inputs y cifrado de datos sensibles.
+### Diseño
+- Usar type hints para mejor documentación
+- Implementar validaciones de datos
+- Mantener responsabilidades bien definidas
 
-**Consejos para Depuración:**
-- Utilice herramientas de depuración integradas en su IDE.
-- Impresiones estratégicas o logs para rastrear flujos y valores.
+### Código
+- Seguir PEP 8
+- Documentar funciones y clases
+- Usar nombres descriptivos
+- Implementar manejo de errores
+
+### Testing
+- Escribir pruebas unitarias
+- Usar fixtures para datos de prueba
+- Probar casos límite y errores
+
+## Conclusiones
+- El AE es útil para scripts simples y prototipos rápidos
+- El AOO es mejor para sistemas complejos y mantenibles
+- Python permite combinar ambos enfoques según necesidades
+- La elección depende del contexto y requisitos del proyecto

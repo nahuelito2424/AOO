@@ -1,69 +1,251 @@
-**Capítulo: Fundamentos del Análisis Orientado a Objetos**
-**Tema: Jerarquía - Organización y Estructuración de Clases**
+# Jerarquía en Python: Herencia y Composición
 
-**Introducción**
+## 1. Sistema de Gestión de Biblioteca
 
-Habiendo explorado la abstracción, encapsulamiento y modularidad, nos adentramos en la jerarquía, un concepto crucial en el Análisis Orientado a Objetos (AOO) que permite estructurar clases de manera lógica y escalable. La jerarquía facilita la comprensión de relaciones entre objetos, promoviendo la reutilización de código y una mayor cohesión en los sistemas.
+### 1.1 Implementación con Herencia
 
-**Definición y Tipos de Jerarquía**
+```python
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+from typing import List, Optional, Dict
+from dataclasses import dataclass
 
-- **Jerarquía de Herencia**: Relación "es-un" entre clases, donde una subclase hereda propiedades y comportamientos de una superclase.
-  - **Herencia Simple**: Una subclase hereda de una sola superclase.
-  - **Herencia Múltiple**: Una subclase hereda de más de una superclase (no recomendada en muchos lenguajes debido a posibles conflictos).
-  - **Herencia Multinivel**: Una subclase hereda de una superclase que, a su vez, hereda de otra clase.
+class RecursoBiblioteca(ABC):
+    def __init__(self, codigo: str, titulo: str, ubicacion: str):
+        self.codigo = codigo
+        self.titulo = titulo
+        self.ubicacion = ubicacion
+        self.prestado = False
+        self.fecha_devolucion: Optional[datetime] = None
 
-- **Jerarquía de Composición**: Relación "tiene-un" entre clases, donde un objeto contiene uno o más objetos de otras clases.
-  - **Composición Simple**: Un objeto contiene objetos de una sola clase.
-  - **Composición Múltiple**: Un objeto contiene objetos de varias clases.
+    @abstractmethod
+    def tiempo_prestamo(self) -> timedelta:
+        """Retorna el tiempo máximo de préstamo para este recurso."""
+        pass
 
-**Diseño de la Jerarquía de Clases**
+    def prestar(self) -> bool:
+        """Intenta prestar el recurso."""
+        if not self.prestado:
+            self.prestado = True
+            self.fecha_devolucion = datetime.now() + self.tiempo_prestamo()
+            return True
+        return False
 
-1. **Identificar las Entidades Principales**: Determinar las clases base del sistema.
-2. **Establecer Relaciones de Herencia**:
-   - Identificar características comunes entre clases.
-   - Definir la superclase con las propiedades y métodos compartidos.
-   - Crear subclases que hereden y especialicen la funcionalidad.
-3. **Aplicar Principios de Diseño**:
-   - **Single Responsibility Principle (SRP)**: Cada clase debe tener una sola razón para cambiar.
-   - **Open/Closed Principle**: Clases abiertas a la extensión pero cerradas a la modificación.
-4. **Refinar con Composición**:
-   - Identificar objetos que puedan contener otros objetos.
-   - Diseñar clases compuestas para mejorar flexibilidad y reutilización.
+    def devolver(self) -> bool:
+        """Registra la devolución del recurso."""
+        if self.prestado:
+            self.prestado = False
+            self.fecha_devolucion = None
+            return True
+        return False
 
-**Ejemplos Prácticos**
+class Libro(RecursoBiblioteca):
+    def __init__(self, codigo: str, titulo: str, autor: str, ubicacion: str):
+        super().__init__(codigo, titulo, ubicacion)
+        self.autor = autor
 
-- **Sistema de Gestión de Personal**:
-  - **Jerarquía de Herencia**:
-    - `Empleado` (superclase)
-    - `Gerente`, `Desarrollador`, `Asistente` (subclases)
-  - **Jerarquía de Composición**:
-    - `Departamento` contiene múltiples `Empleado`
+    def tiempo_prestamo(self) -> timedelta:
+        return timedelta(days=14)
 
-- **Plataforma de Juegos**:
-  - **Jerarquía de Herencia**:
-    - `Juego` (superclase)
-    - `Aventura`, `Estrategia`, `Deportes` (subclases)
-  - **Jerarquía de Composición**:
-    - `Nivel` contiene `Plataformas`, `Enemigos`, y `PowerUps`
+class Revista(RecursoBiblioteca):
+    def __init__(self, codigo: str, titulo: str, numero: int, ubicacion: str):
+        super().__init__(codigo, titulo, ubicacion)
+        self.numero = numero
 
-**Patrones de Diseño para Jerarquías Efectivas**
+    def tiempo_prestamo(self) -> timedelta:
+        return timedelta(days=7)
 
-1. **Patrón de Plantilla (Template Pattern)**: Para definir el esqueleto de un algoritmo en la superclase, permitiendo a las subclases personalizar ciertos pasos.
-2. **Patrón de Decorador (Decorator Pattern)**: Para agregar dinámicamente nuevas funcionalidades a objetos sin alterar su estructura de clases.
+class RecursoDigital(RecursoBiblioteca):
+    def __init__(self, codigo: str, titulo: str, formato: str, url: str):
+        super().__init__(codigo, titulo, "digital")
+        self.formato = formato
+        self.url = url
 
-**Consejos para una Jerarquía Bien Diseñada**
+    def tiempo_prestamo(self) -> timedelta:
+        return timedelta(days=3)
+```
 
-1. **Evitar la Profundidad Excesiva**: Jerarquías muy profundas pueden complicar el mantenimiento.
-2. **Utilizar Herencia para lo que es**: Evitar abusar de la herencia para compartir datos; considerar composición en esos casos.
-3. **Documentar las Relaciones entre Clases**: Mejorar la comprensión y facilitar futuras modificaciones.
+### 1.2 Implementación con Composición
 
-**Preguntas de Repaso**
+```python
+@dataclass
+class Usuario:
+    id: str
+    nombre: str
+    email: str
+    tipo: str  # estudiante, profesor, etc.
 
-1. Describa cómo aplicaría el principio de responsabilidad única al diseñar una jerarquía de clases para un sistema de gestión de inventario.
-2. Explique la diferencia clave entre herencia múltiple y composición múltiple en el diseño de jerarquías.
-3. Diseñe un ejemplo de aplicación del patrón de plantilla en una plataforma educativa para gestionar diferentes tipos de exámenes.
+class HistorialPrestamo:
+    def __init__(self):
+        self.prestamos: List[Dict] = []
 
-**Actividades Prácticas**
+    def registrar_prestamo(
+        self, 
+        usuario: Usuario, 
+        recurso: RecursoBiblioteca
+    ) -> None:
+        self.prestamos.append({
+            'fecha': datetime.now(),
+            'usuario': usuario,
+            'recurso': recurso,
+            'fecha_devolucion': recurso.fecha_devolucion
+        })
 
-1. **Sistema de Gestión de Biblioteca**: Diseñe e implemente una jerarquía de clases que incluya libros, revistas, y recursos digitales, aplicando principios de herencia y composición.
-2. **Aplicación de Simulación de Ecosistemas**: Cree una jerarquía de clases para representar diferentes especies (terrestres, acuáticas, aéreas) y su entorno, utilizando patrones de diseño para facilitar la expansión del ecosistema.
+class Biblioteca:
+    def __init__(self):
+        self.recursos: List[RecursoBiblioteca] = []
+        self.usuarios: List[Usuario] = []
+        self.historial = HistorialPrestamo()
+
+    def agregar_recurso(self, recurso: RecursoBiblioteca) -> None:
+        self.recursos.append(recurso)
+
+    def agregar_usuario(self, usuario: Usuario) -> None:
+        self.usuarios.append(usuario)
+
+    def prestar_recurso(
+        self, 
+        codigo_recurso: str, 
+        id_usuario: str
+    ) -> bool:
+        recurso = next(
+            (r for r in self.recursos if r.codigo == codigo_recurso), 
+            None
+        )
+        usuario = next(
+            (u for u in self.usuarios if u.id == id_usuario), 
+            None
+        )
+
+        if recurso and usuario and recurso.prestar():
+            self.historial.registrar_prestamo(usuario, recurso)
+            return True
+        return False
+```
+
+## 2. Ejemplo: Sistema de Notificaciones
+
+```python
+from abc import ABC, abstractmethod
+from typing import List, Protocol
+from dataclasses import dataclass
+
+class Destinatario(Protocol):
+    def obtener_direccion(self) -> str:
+        ...
+
+@dataclass
+class Cliente:
+    email: str
+    telefono: str
+    
+    def obtener_direccion(self) -> str:
+        return self.email
+
+class Notificacion(ABC):
+    @abstractmethod
+    def enviar(self, destinatario: Destinatario, mensaje: str) -> bool:
+        pass
+
+class NotificacionEmail(Notificacion):
+    def enviar(self, destinatario: Destinatario, mensaje: str) -> bool:
+        print(f"Enviando email a {destinatario.obtener_direccion()}: {mensaje}")
+        return True
+
+class NotificacionSMS(Notificacion):
+    def enviar(self, destinatario: Cliente, mensaje: str) -> bool:
+        print(f"Enviando SMS a {destinatario.telefono}: {mensaje}")
+        return True
+
+class ServicioNotificaciones:
+    def __init__(self):
+        self.notificadores: List[Notificacion] = []
+
+    def agregar_notificador(self, notificador: Notificacion) -> None:
+        self.notificadores.append(notificador)
+
+    def notificar_todos(
+        self, 
+        destinatario: Destinatario, 
+        mensaje: str
+    ) -> None:
+        for notificador in self.notificadores:
+            notificador.enviar(destinatario, mensaje)
+```
+
+## 3. Pruebas Unitarias
+
+```python
+import unittest
+from datetime import datetime, timedelta
+
+class TestBiblioteca(unittest.TestCase):
+    def setUp(self):
+        self.biblioteca = Biblioteca()
+        self.libro = Libro("L1", "Python Basics", "John Doe", "A1")
+        self.usuario = Usuario("U1", "Ana Smith", "ana@email.com", "estudiante")
+        
+        self.biblioteca.agregar_recurso(self.libro)
+        self.biblioteca.agregar_usuario(self.usuario)
+
+    def test_prestamo_libro(self):
+        # Prueba préstamo exitoso
+        self.assertTrue(
+            self.biblioteca.prestar_recurso("L1", "U1")
+        )
+        self.assertTrue(self.libro.prestado)
+
+        # Prueba préstamo de libro ya prestado
+        self.assertFalse(
+            self.biblioteca.prestar_recurso("L1", "U1")
+        )
+
+    def test_devolucion_libro(self):
+        self.biblioteca.prestar_recurso("L1", "U1")
+        self.assertTrue(self.libro.devolver())
+        self.assertFalse(self.libro.prestado)
+
+class TestNotificaciones(unittest.TestCase):
+    def setUp(self):
+        self.servicio = ServicioNotificaciones()
+        self.cliente = Cliente("user@email.com", "123456789")
+
+    def test_notificacion_multiple(self):
+        self.servicio.agregar_notificador(NotificacionEmail())
+        self.servicio.agregar_notificador(NotificacionSMS())
+        
+        # Debería enviar tanto email como SMS
+        self.servicio.notificar_todos(
+            self.cliente, 
+            "Prueba de notificación"
+        )
+```
+
+## 4. Mejores Prácticas
+
+1. **Herencia**:
+   - Usar cuando existe una relación "es-un"
+   - Mantener jerarquías poco profundas
+   - Favorecer composición sobre herencia
+
+2. **Composición**:
+   - Usar cuando existe una relación "tiene-un"
+   - Permite mayor flexibilidad
+   - Facilita cambios en tiempo de ejecución
+
+3. **Diseño**:
+   - Seguir el principio SOLID
+   - Documentar relaciones entre clases
+   - Usar type hints para claridad
+
+## 5. Ejercicio Propuesto
+
+Implementar un sistema de gestión de empleados con:
+1. Jerarquía de empleados (gerentes, desarrolladores, etc.)
+2. Sistema de permisos basado en roles
+3. Registro de actividades y reportes
+4. Notificaciones personalizadas por rol
+
+## Conclusión
+
+La jerarquía en Python puede implementarse eficientemente usando tanto herencia como composición. La clave está en elegir el enfoque adecuado según las necesidades del sistema.
