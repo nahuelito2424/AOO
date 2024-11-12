@@ -254,7 +254,14 @@ classDiagram
     Usuario "1" --> "*" Prestamo
     Libro "1" --> "0..1" Prestamo
 ```
-
+##### Diagrama de secuencia de préstamo de libro
+```mermaid
+sequenceDiagram
+    Usuario->>Libro: tomar_prestado(libro)
+    Libro->>Usuario: prestar()
+    Usuario->>Prestamo: marcar_devuelto()
+    Prestamo->>Libro: devolver()
+```
 ## 3. Comparación de Enfoques
 
 ### Ventajas del AE
