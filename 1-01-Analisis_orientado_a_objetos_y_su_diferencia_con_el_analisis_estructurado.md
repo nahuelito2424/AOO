@@ -88,7 +88,7 @@ erDiagram
         datetime FECHA_PRESTAMO
         datetime FECHA_DEVOLUCION
     }
-    LIBRO ||--o PRESTAMO : PRESTADO A
+    LIBRO ||--o PRESTAMO : PRESTADO_A
     USUARIO ||--o PRESTAMO : REALIZA
 ```
 
