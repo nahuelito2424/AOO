@@ -70,6 +70,29 @@ graph TD
     I --> J{Fin}
 ```
 
+##### Diagrama entidad relación de la Biblioteca
+```mermaid
+erDiagram
+    LIBRO {
+        string ISBN
+        string TITULO
+        string AUTOR
+        bool DISPONIBLE
+    }
+    USUARIO {
+        int ID
+        string NOMBRE
+    }
+    PRESTAMO {
+        int ID
+        datetime FECHA_PRESTAMO
+        datetime FECHA_DEVOLUCION
+    }
+    LIBRO ||--o PRESTAMO : PRESTADO A
+    USUARIO ||--o PRESTAMO : REALIZA
+```
+
+
 #### Enfoque Orientado a Objetos (AOO)
 ```python
 from datetime import datetime, timedelta
