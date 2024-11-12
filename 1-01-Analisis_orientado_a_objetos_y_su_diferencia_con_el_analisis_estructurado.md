@@ -10,7 +10,7 @@ Esta unidad explora las diferencias entre el Análisis Orientado a Objetos (AOO)
 - Evaluar qué enfoque usar según el proyecto
 - Aplicar buenas prácticas de programación en ambos paradigmas
 
-## 2. Sistema de Biblioteca: Caso Práctico ()
+## 2. Sistema de Biblioteca: Caso Práctico
 
 ### Requerimientos Principales
 - Gestión de usuarios (estudiantes y bibliotecarios)
@@ -51,6 +51,23 @@ def prestar_libro(isbn, id_usuario):
             }
             return True
     return False
+```
+
+##### Diagrama de flujo de datos de la Biblioteca
+```mermaid
+graph TD
+    A[Registrar Libro] --> B(Agregar Libro)
+    B --> C{Libro Agregado}
+    C -- Sí --> D[Registrar Préstamo]
+    C -- No --> A
+    D --> E{Préstamo Exitoso}
+    E -- Sí --> F[Actualizar Disponibilidad]
+    E -- No --> G[Error]
+    F --> H{Notificar Usuario}
+    H -- Sí --> I[Fin]
+    H -- No --> I
+    G --> I
+    I --> J{Fin}
 ```
 
 #### Enfoque Orientado a Objetos (AOO)
