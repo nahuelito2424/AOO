@@ -179,6 +179,10 @@ class DVD(MaterialBiblioteca):
     def calcular_fecha_devolucion(self) -> datetime:
         return datetime.now() + timedelta(days=3)
 ```
+## 3.1 Tarea
+### Hacer diagrama de clases
+### Hacer Diagrama de secuencia
+### Hacer pruebas unitarias
 
 ## 4. Mejores Prácticas
 
