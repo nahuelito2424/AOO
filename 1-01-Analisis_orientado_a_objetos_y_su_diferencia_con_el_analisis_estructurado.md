@@ -212,7 +212,7 @@ class Biblioteca:
 
 ### Diagramas del Sistema
 
-```mermaid
+```mermaid 
 classDiagram
     class Biblioteca {
         +List[Libro] libros
