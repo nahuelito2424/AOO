@@ -113,6 +113,23 @@ Campos
 - FECHA_PRESTAMO: datetime - Fecha de préstamo
 - FECHA_DEVOLUCION: datetime - Fecha de devolución
 
+##### Diagrama de flujo de datos cuando se presta un libro
+```mermaid
+graph TD
+    A[Registrar Préstamo] --> B(Verificar Disponibilidad)
+    B --> C{Disponible}
+    C -- Sí --> D[Registrar Préstamo]
+    C -- No --> E[Error]
+    D --> F{Préstamo Exitoso}
+    F -- Sí --> G[Actualizar Disponibilidad]
+    F -- No --> H[Error]
+    G --> I{Notificar Usuario}
+    I -- Sí --> J[Fin]
+    I -- No --> J
+    H --> J
+    J --> K{Fin}
+```
+
 #### Enfoque Orientado a Objetos (AOO)
 ```python
 from datetime import datetime, timedelta
