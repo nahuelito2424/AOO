@@ -245,6 +245,8 @@ classDiagram
         -datetime fecha_prestamo
         -datetime fecha_devolucion
         -bool devuelto
+        +marcar_devuelto()
+        +prestar(Libro, Usuario)
     }
     
     Biblioteca "1" --> "*" Libro
