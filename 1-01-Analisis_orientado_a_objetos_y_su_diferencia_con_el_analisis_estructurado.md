@@ -254,13 +254,16 @@ classDiagram
     Libro "1" --> "0..1" Prestamo
 ```
 ##### Diagrama de secuencia de préstamo de libro
+Hacer el diagrama de secuencia que corresponda al codigo python de la clase Biblioteca, Libro y Usuario
 ```mermaid
 sequenceDiagram
-    Usuario->>Libro: tomar_prestado(libro)
-    Libro->>Usuario: prestar()
-    Usuario->>Prestamo: marcar_devuelto()
-    Prestamo->>Libro: devolver()
+    Usuario->>Biblioteca: tomar_prestado(libro)
+    Biblioteca->>Libro: buscar_libro(isbn)
+    Libro-->>Usuario: prestar(usuario)
+    Usuario-->>Libro: devolver()
+
 ```
+
 ## 3. Comparación de Enfoques
 
 ### Ventajas del AE
