@@ -228,7 +228,7 @@ classDiagram
         -str titulo
         -str autor
         -bool disponible
-        +prestar()
+        +prestar(Usuario)
         +devolver()
     }
     
@@ -246,7 +246,6 @@ classDiagram
         -datetime fecha_devolucion
         -bool devuelto
         +marcar_devuelto()
-        +prestar(Libro, Usuario)
     }
     
     Biblioteca "1" --> "*" Libro
