@@ -129,7 +129,20 @@ graph TD
     H --> J
     J --> K{Fin}
 ```
-
+##### Diagrama de flujo de datos cuando se devuelve un libro
+```mermaid
+graph TD
+    A[Registrar Devolución] --> B(Verificar Préstamo)
+    B --> C{Encontrado}
+    C -- Sí --> D[Actualizar Disponibilidad]
+    C -- No --> E[Error]
+    D --> F{Devolución Exitosa}
+    F -- Sí --> G[Fin]
+    F -- No --> H[Error]
+    E --> H
+    H --> G
+    G --> I{Fin}
+```
 #### Enfoque Orientado a Objetos (AOO)
 ```python
 from datetime import datetime, timedelta
