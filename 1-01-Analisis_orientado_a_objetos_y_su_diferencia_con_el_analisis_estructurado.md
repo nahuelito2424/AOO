@@ -10,7 +10,7 @@ Esta unidad explora las diferencias entre el Análisis Orientado a Objetos (AOO)
 - Evaluar qué enfoque usar según el proyecto
 - Aplicar buenas prácticas de programación en ambos paradigmas
 
-## 2. Sistema de Biblioteca: Caso Práctico
+## 2. Sistema de Biblioteca: Caso Práctico ()
 
 ### Requerimientos Principales
 - Gestión de usuarios (estudiantes y bibliotecarios)
