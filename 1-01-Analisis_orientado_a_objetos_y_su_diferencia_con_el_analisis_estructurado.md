@@ -93,7 +93,25 @@ erDiagram
 
 
 ```
+##### Hacer una tabla con el diccionario de datos de la biblioteca
 
+Tabla: Libro
+Campos
+- ISBN: string - Clave primaria
+- TITULO: string - Título del libro
+- AUTOR: string - Autor del libro
+- DISPONIBLE: boolean - Indica si el libro está disponible para préstamo
+
+Tabla: Usuario
+Campos
+- ID: int - Clave primaria
+- NOMBRE: string - Nombre del usuario
+
+Tabla: Prestamo
+Campos
+- ID: int - Clave primaria
+- FECHA_PRESTAMO: datetime - Fecha de préstamo
+- FECHA_DEVOLUCION: datetime - Fecha de devolución
 
 #### Enfoque Orientado a Objetos (AOO)
 ```python
