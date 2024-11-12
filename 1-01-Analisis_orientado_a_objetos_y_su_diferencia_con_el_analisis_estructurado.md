@@ -1,4 +1,4 @@
-**Unidad 3: Análisis Orientado a Objetos vs. Análisis Estructurado - Profundización**
+**Capitulo: Análisis Orientado a Objetos vs. Análisis Estructurado**
 
 ### **1. Introducción a la Unidad y Objetivos de Aprendizaje**
 
