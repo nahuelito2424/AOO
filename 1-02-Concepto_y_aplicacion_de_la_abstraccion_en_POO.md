@@ -83,9 +83,9 @@ class MetodoPago(ABC):
         pass
 
 class TarjetaCredito(MetodoPago):
-    def __init__(self, numero: str, fecha_exp: str):
+    def __init__(self, numero: str, fecha_vencimiento: str):
         self.numero = numero
-        self.fecha_exp = fecha_exp
+        self.fecha_vencimiento = fecha_vencimiento
     
     def procesar_pago(self, monto: float) -> bool:
         if self.verificar_fondos(monto):
