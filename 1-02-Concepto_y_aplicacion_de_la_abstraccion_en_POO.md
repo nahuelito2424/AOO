@@ -145,6 +145,10 @@ classDiagram
         -fecha: datetime
         +ejecutar_pago(monto: float): bool
     }
+
+    MetodoPago <|-- TarjetaCredito
+    MetodoPago <|-- PayPal
+    Transaccion o-- MetodoPago
 ```
 
 ### 2.3 Pruebas Unitarias
