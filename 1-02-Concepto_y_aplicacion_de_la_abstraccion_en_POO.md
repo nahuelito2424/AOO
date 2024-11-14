@@ -199,6 +199,11 @@ Ran 1 test in 0.001s
 
 OK
 ```
+### Ejercicio: Tests con estos valores
+- Test 1: Pago con tarjeta de crédito de $100
+- Test 2: Pago con PayPal de $50
+- Test 3: Pago con tarjeta de crédito de $200
+- Test 4: Hacer un listado de transacciones mostrando el método de pago el monto y la fecha
 
 ## 3. Ejercicio Práctico: Sistema de Biblioteca
 
