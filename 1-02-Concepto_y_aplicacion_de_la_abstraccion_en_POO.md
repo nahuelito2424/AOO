@@ -200,12 +200,6 @@ Ran 1 test in 0.001s
 OK
 ```
 
-### Ejercicio: Tests con estos valores
-- Test 1: Pago con tarjeta de crédito de $100
-- Test 2: Pago con PayPal de $50
-- Test 3: Pago con tarjeta de crédito de $200
-- Test 4: Hacer un listado de transacciones
-
 ## 3. Ejercicio Práctico: Sistema de Biblioteca
 
 ```python
@@ -272,58 +266,95 @@ classDiagram
     MaterialBiblioteca <|-- DVD
 
 ```
-## 3.1 Tarea
-### Hacer diagrama de clases
-### Hacer Diagrama de secuencia
+
+
+### Diagrama de clases
+```mermaid
+classDiagram
+    class MaterialBiblioteca {
+        +str codigo
+        +str titulo
+        +bool prestado
+        +datetime fecha_devolucion
+        +prestar() bool
+        <<abstract>>
+        +calcular_fecha_devolucion() datetime
+    }
+
+    class Libro {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    class Revista {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    class DVD {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    MaterialBiblioteca <|-- Libro
+    MaterialBiblioteca <|-- Revista
+    MaterialBiblioteca <|-- DVD
+```
+
+
+### Diagrama de secuencia
+```mermaid
+sequenceDiagram
+    participant Biblioteca
+    participant MaterialBiblioteca
+
+    Biblioteca->>MaterialBiblioteca: Llamada a prestar()
+    MaterialBiblioteca->>MaterialBiblioteca: Verifica si está prestado
+    MaterialBiblioteca->>MaterialBiblioteca: Llama a calcular_fecha_devolucion()
+    MaterialBiblioteca->>Biblioteca: Retorna la fecha de devolución
+    Biblioteca->>Biblioteca: Asigna fecha de devolución
+```
+
+
 ### Pruebas Unitarias
 ```python
-from datetime import datetime, timedelta
-from biblioteca import Libro, Revista, DVD 
+import unittest
+from datetime import datetime
+from biblioteca import Libro, Revista, DVD
 
-class TestMaterialBiblioteca:
+class TestBiblioteca(unittest.TestCase):
+    def setUp(self):
+        self.libro = Libro("L123", "El Gran Libro")
+        self.revista = Revista("R456", "Revista de Ciencia")
+        self.dvd = DVD("D789", "Película de Aventura")
 
-    def test_material_biblioteca(self):
-        libro = Libro(codigo="L001", titulo="Libro de prueba")
-        libro.prestar()
-        print(f"Libro prestado después de llamar a prestar(): {libro.prestado}")
-        print(f"Fecha de devolución libro: {libro.fecha_devolucion}\n")
+    def mostrar_item(self, item):
+        print(f'Título: {item.titulo}, Código: {item.codigo}, Fecha de devolución: {item.fecha_devolucion.strftime("%Y-%m-%d %H:%M:%S")}')
+    
+    def test_listado_biblioteca_items(self):
+        print("Items prestados:")
 
-        revista = Revista(codigo="R001", titulo="Revista de prueba")
-        print(f"Revista prestada inicialmente: {revista.prestado}")
-        revista.prestar()
-        print(f"Fecha de devolución revista: {revista.fecha_devolucion}\n")
+        self.libro.prestar()
+        self.mostrar_item(self.libro)
+        
+        self.revista.prestar()
+        self.mostrar_item(self.revista)
+        
+        self.dvd.prestar()
+        self.mostrar_item(self.dvd)
 
-        dvd = DVD(codigo="D001", titulo="DVD de prueba")
-        dvd.prestar()
-        print(f"Fecha de devolución DVD: {dvd.fecha_devolucion}\n")
 
-        prestamo_exitoso = libro.prestar()
-        print(f"Intento de prestar el libro por segunda vez: {prestamo_exitoso}")
-
-if __name__ == "__main__":
-    pruebas = TestMaterialBiblioteca()
-    pruebas.test_material_biblioteca()
+if __name__ == '__main__':
+    unittest.main()
 ```
 ## Output pruebas unitarias 
 ```text
-Pruebas para Libro:
-Libro prestado inicialmente: False
-Libro prestado después de llamar a prestar(): True   
-Fecha de devolución libro: 2024-11-28 19:45:51.604839
+Items prestados:
+Título: El Gran Libro, Código: L123, Fecha de devolución: 2024-11-28 20:16:12
+Título: Revista de Ciencia, Código: R456, Fecha de devolución: 2024-11-21 20:16:12
+Título: Película de Aventura, Código: D789, Fecha de devolución: 2024-11-17 20:16:12
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
 
-Pruebas para Revista:
-Revista prestada inicialmente: False
-Revista prestada después de llamar a prestar(): True
-Fecha de devolución revista: 2024-11-21 19:45:51.605339
-
-Pruebas para DVD:
-DVD prestado inicialmente: False
-DVD prestado después de llamar a prestar(): True
-Fecha de devolución DVD: 2024-11-17 19:45:51.605839
-
-Prueba de prestar dos veces:
-Intento de prestar el libro por segunda vez: False
-No se puede prestar un libro ya prestado.
+OK
 ```
 
 

@@ -1,26 +1,28 @@
-from datetime import datetime, timedelta
-from biblioteca import Libro, Revista, DVD 
+import unittest
+from datetime import datetime
+from biblioteca import Libro, Revista, DVD
 
-class TestMaterialBiblioteca:
+class TestBiblioteca(unittest.TestCase):
+    def setUp(self):
+        self.libro = Libro("L123", "El Gran Libro")
+        self.revista = Revista("R456", "Revista de Ciencia")
+        self.dvd = DVD("D789", "Película de Aventura")
 
-    def test_material_biblioteca(self):
-        libro = Libro(codigo="L001", titulo="Libro de prueba")
-        libro.prestar()
-        print(f"Libro prestado después de llamar a prestar(): {libro.prestado}")
-        print(f"Fecha de devolución libro: {libro.fecha_devolucion}\n")
+    def mostrar_item(self, item):
+        print(f'Título: {item.titulo}, Código: {item.codigo}, Fecha de devolución: {item.fecha_devolucion.strftime("%Y-%m-%d %H:%M:%S")}')
+    
+    def test_listado_biblioteca_items(self):
+        print("Items prestados:")
 
-        revista = Revista(codigo="R001", titulo="Revista de prueba")
-        print(f"Revista prestada inicialmente: {revista.prestado}")
-        revista.prestar()
-        print(f"Fecha de devolución revista: {revista.fecha_devolucion}\n")
+        self.libro.prestar()
+        self.mostrar_item(self.libro)
+        
+        self.revista.prestar()
+        self.mostrar_item(self.revista)
+        
+        self.dvd.prestar()
+        self.mostrar_item(self.dvd)
 
-        dvd = DVD(codigo="D001", titulo="DVD de prueba")
-        dvd.prestar()
-        print(f"Fecha de devolución DVD: {dvd.fecha_devolucion}\n")
 
-        prestamo_exitoso = libro.prestar()
-        print(f"Intento de prestar el libro por segunda vez: {prestamo_exitoso}")
-
-if __name__ == "__main__":
-    pruebas = TestMaterialBiblioteca()
-    pruebas.test_material_biblioteca()
+if __name__ == '__main__':
+    unittest.main()
