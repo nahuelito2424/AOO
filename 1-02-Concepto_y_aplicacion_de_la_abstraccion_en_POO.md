@@ -216,6 +216,35 @@ class DVD(MaterialBiblioteca):
     def calcular_fecha_devolucion(self) -> datetime:
         return datetime.now() + timedelta(days=3)
 ```
+
+```mermaid
+classDiagram
+    class MaterialBiblioteca {
+        -codigo: str
+        -titulo: str
+        -prestado: bool
+        -fecha_devolucion: Optional[datetime]
+        +calcular_fecha_devolucion() datetime
+        +prestar() bool
+    }
+
+    class Libro {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    class Revista {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    class DVD {
+        +calcular_fecha_devolucion() datetime
+    }
+
+    MaterialBiblioteca <|-- Libro
+    MaterialBiblioteca <|-- Revista
+    MaterialBiblioteca <|-- DVD
+
+```
 ## 3.1 Tarea
 ### Hacer diagrama de clases
 ### Hacer Diagrama de secuencia
