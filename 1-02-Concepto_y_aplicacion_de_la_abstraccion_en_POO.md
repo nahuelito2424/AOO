@@ -142,6 +142,12 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
+### Ejercicio: Tests con estos valores
+Test 1: Pago con tarjeta de crédito de $100
+Test 2: Pago con PayPal de $50
+Test 3: Pago con tarjeta de crédito de $200
+Test 4: Hacer un listado de transacciones
+
 ## 3. Ejercicio Práctico: Sistema de Biblioteca
 
 ```python
