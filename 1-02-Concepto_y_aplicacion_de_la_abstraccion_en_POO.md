@@ -140,11 +140,11 @@ classDiagram
         +procesar_pago(monto: float): bool
         +verificar_fondos(monto: float): bool
     }
-    class Transaccion
-    MetodoPago <|-- TarjetaCredito
-    Metodo
-    MetodoPago <|-- PayPal
-    MetodoPago <|-- Transaccion
+    class Transaccion {	
+        -metodo_pago: MetodoPago
+        -fecha: datetime
+        +ejecutar_pago(monto: float): bool
+    }
 ```
 
 ### 2.3 Pruebas Unitarias
