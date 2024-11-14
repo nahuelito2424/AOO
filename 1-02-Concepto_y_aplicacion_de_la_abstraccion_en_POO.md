@@ -155,22 +155,49 @@ classDiagram
 
 ```python
 import unittest
+from datetime import datetime
+from sistema_pagos import TarjetaCredito, PayPal, Transaccion
 
 class TestMetodosPago(unittest.TestCase):
     def setUp(self):
         self.tarjeta = TarjetaCredito("1234-5678-9012-3456", "12/25")
-        self.paypal = PayPal("usuario@email.com")
-    
-    def test_pago_tarjeta(self):
+        self.paypal = PayPal("hola@email.com")
+        self.transacciones = []
+
+    def realizar_pago_tarjeta(self, monto: float):
         transaccion = Transaccion(self.tarjeta)
-        self.assertTrue(transaccion.ejecutar_pago(100.0))
-    
-    def test_pago_paypal(self):
+        transaccion.ejecutar_pago(monto)
+        self.transacciones.append(transaccion)
+
+    def realizar_pago_paypal(self, monto: float):
         transaccion = Transaccion(self.paypal)
-        self.assertTrue(transaccion.ejecutar_pago(50.0))
+        transaccion.ejecutar_pago(monto)
+        self.transacciones.append(transaccion)
+
+    def test_pago(self):
+        self.realizar_pago_tarjeta(100.0)
+        self.realizar_pago_paypal(50.0)
+        self.realizar_pago_tarjeta(200.0)
+        for transaccion in self.transacciones:
+            print(f'Método de pago: {transaccion.metodo_pago.__class__.__name__}, Fecha: {transaccion.fecha.strftime("%Y-%m-%d %H:%M:%S")}')
 
 if __name__ == '__main__':
     unittest.main()
+```
+
+## Output pruebas unitarias
+```text
+Procesando pago de $100.0 con tarjeta 1234-5678-9012-3456
+Procesando pago de $50.0 con PayPal (hola@email.com)      
+Procesando pago de $200.0 con tarjeta 1234-5678-9012-3456 
+Método de pago: TarjetaCredito, Fecha: 2024-11-14 20:06:30
+Método de pago: PayPal, Fecha: 2024-11-14 20:06:30        
+Método de pago: TarjetaCredito, Fecha: 2024-11-14 20:06:30
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK
 ```
 
 ### Ejercicio: Tests con estos valores
@@ -248,7 +275,58 @@ classDiagram
 ## 3.1 Tarea
 ### Hacer diagrama de clases
 ### Hacer Diagrama de secuencia
-### Hacer pruebas unitarias
+### Pruebas Unitarias
+```python
+from datetime import datetime, timedelta
+from biblioteca import Libro, Revista, DVD 
+
+class TestMaterialBiblioteca:
+
+    def test_material_biblioteca(self):
+        libro = Libro(codigo="L001", titulo="Libro de prueba")
+        libro.prestar()
+        print(f"Libro prestado después de llamar a prestar(): {libro.prestado}")
+        print(f"Fecha de devolución libro: {libro.fecha_devolucion}\n")
+
+        revista = Revista(codigo="R001", titulo="Revista de prueba")
+        print(f"Revista prestada inicialmente: {revista.prestado}")
+        revista.prestar()
+        print(f"Fecha de devolución revista: {revista.fecha_devolucion}\n")
+
+        dvd = DVD(codigo="D001", titulo="DVD de prueba")
+        dvd.prestar()
+        print(f"Fecha de devolución DVD: {dvd.fecha_devolucion}\n")
+
+        prestamo_exitoso = libro.prestar()
+        print(f"Intento de prestar el libro por segunda vez: {prestamo_exitoso}")
+
+if __name__ == "__main__":
+    pruebas = TestMaterialBiblioteca()
+    pruebas.test_material_biblioteca()
+```
+## Output pruebas unitarias 
+```text
+Pruebas para Libro:
+Libro prestado inicialmente: False
+Libro prestado después de llamar a prestar(): True   
+Fecha de devolución libro: 2024-11-28 19:45:51.604839
+
+Pruebas para Revista:
+Revista prestada inicialmente: False
+Revista prestada después de llamar a prestar(): True
+Fecha de devolución revista: 2024-11-21 19:45:51.605339
+
+Pruebas para DVD:
+DVD prestado inicialmente: False
+DVD prestado después de llamar a prestar(): True
+Fecha de devolución DVD: 2024-11-17 19:45:51.605839
+
+Prueba de prestar dos veces:
+Intento de prestar el libro por segunda vez: False
+No se puede prestar un libro ya prestado.
+```
+
+
 
 ## 4. Mejores Prácticas
 
